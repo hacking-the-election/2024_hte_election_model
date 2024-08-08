@@ -4,11 +4,13 @@ import pandas as pd
 import requests
 from math import exp
 from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 
 from polling_error import polling_error_coeffs
 
 REP = "Trump"
-DEM = "Biden"
+DEM = "Harris"
 
 def time_weighting(poll_delta):
     """
@@ -40,6 +42,39 @@ def setup():
     global time_weighting 
     time_weighting = np.vectorize(time_weighting)
 
+def date_converter(date):
+    if date.find(" ") == -1:
+        day = date[date.find(" "):].strip().zfill(2)
+    else:
+        day = date[date.find(" "):].strip().zfill(2)
+    if day == "00":
+        day = "01"
+    if "Jan." in date:
+        poll_date = np.datetime64("2024-01-"+day)
+    if "Feb." in date:
+        poll_date = np.datetime64("2024-02-"+day)
+    if "March" in date:
+        poll_date = np.datetime64("2024-03-"+day)
+    if "April" in date:
+        poll_date = np.datetime64("2024-04-"+day)
+    if "May" in date:
+        poll_date = np.datetime64("2024-05-"+day)
+    if "June" in date:
+        poll_date = np.datetime64("2024-06-"+day)
+    if "July" in date:
+        poll_date = np.datetime64("2024-07-"+day)
+    if "Aug." in date:
+        poll_date = np.datetime64("2024-08-"+day)
+    if "Sep." in date:
+        poll_date = np.datetime64("2024-09-"+day)
+    if "Oct." in date:
+        poll_date = np.datetime64("2024-10-"+day)
+    if "Nov." in date:
+        poll_date = np.datetime64("2024-11-"+day)
+    if "Dec." in date:
+        poll_date = np.datetime64("2024-12-"+day)
+    return poll_date
+
 def scrape_raw_average():
     """
     Retrieves time-weighted polling average for as many states as possible from 
@@ -53,39 +88,64 @@ def scrape_raw_average():
     setup()
     time = np.datetime64(np.datetime64('now'), 'h')
     time_string = np.datetime_as_string(time, unit='h')
-    print(time_string)
     to_fill = {"margin":np.zeros(len(territories)), "poll_num":np.zeros(len(territories))}
     territory_averages = pd.DataFrame(to_fill)
     for num, territory in enumerate(territories):
+        if num == 1:
+            quit()
         territory = territory.replace("-","/")
         territory = territory.replace(" ","-")
         print(territory.lower())
         # link = "https://www.realclearpolitics.com/epolls/2020/president/us/general_election_" + REP.lower() + "_vs_" + DEM.lower() + "-6247.html"
-        link = "https://projects.fivethirtyeight.com/polls/president-general/" + territory.lower() + "/"
+        link = "https://projects.fivethirtyeight.com/polls/president-general/2024/" + territory.lower() + "/"
+        chromedriver_path= "/home/pbnjam/.cache/selenium/chromedriver/linux64/127.0.6533.99/chromedriver"
+        # driver = webdriver.Chrome(chromedriver_path)
+        service = Service(executable_path='C:/Program Files (x86)/Google/Chrome/Application/chrome.exe')
+        driver = webdriver.Chrome(service=service)
+        driver.get(link)
+        time.sleep(3) #if you want to wait 3 seconds for the page to load
+        page_source = driver.page_source
+        soup = BeautifulSoup(page_source, 'lxml')
         yes = requests.get(link)
+        print(yes.json())
         if yes.status_code == 404:
             territory_averages.iat[num,0] = 999
             territory_averages.iat[num,1] = 0
             continue
         soup = BeautifulSoup(yes.content, features="lxml")
-        poll_container = soup.body.find(attrs={"class":"container content"}).find(attrs={"class":"polls"})
+        print(soup)
+        poll_container = soup.body.find(attrs={"class":"container content"}).find(attrs={"class":"day-container"}).find_all(attrs={"class":"polls-table"})[0]
+        # poll_container = soup.body.find(attrs={"class":"container content"}).find(attrs={"class":"day-container"})
+        # print(poll_co ntainer)
         territory_margins = []
         dates = []
+        # print(poll_container.children)
         for x in poll_container.children:
-            poll_date = np.datetime64(x.h2["data-date"])
-            # print(poll_date)
-            day = x.table.tbody
-            for poll in day.find_all(attrs={"class":"visible-row"}):
-                choices = poll.find_all(attrs={"class":"answers hide-desktop"})[0].div
-                choices = [choice.p.text for choice in choices.children]
+            # print(x)
+            # Iterate through polls
+            # day = x.table.tbody
+            # for poll in x.find(attrs={"class":"visible-row"}):
+            for poll in x.find_all("tr", attrs={"class":"visible-row"}):
+            # poll = x.tr
+                poll_date = poll.find(attrs={"class":"date-wrapper"}).text
+                # print(poll_date.find(" "))
+                poll_date = poll_date[:poll_date.find("-")]
+                poll_date = date_converter(poll_date)
+                print(poll_date)
+                # Ignore polls not including rep/dem candidates
+                choices = poll.find(attrs={"class":"answers hide-desktop"}).find_all(attrs={"class":"mobile-answer"})
+                choices = [choice.p.text.strip() for choice in choices]
+                print(choices)
                 if REP not in choices or DEM not in choices:
                     continue
-                area = poll.find(attrs={"class":"dates hide-desktop"}).span.text.lower()
-                if territory.lower() in ["maine", "nebraska"]:
-                    if area.lower() != territory.lower():
-                        continue
+                
+                # area = poll.find(attrs={"class":"dates hide-desktop"}).span.text.lower()
+                # if territory.lower() in ["maine", "nebraska"]:
+                #     if area.lower() != territory.lower():
+                #         continue
                 # print(poll.prettify())
                 # print(poll.find_all(attrs={"class":"visible-row"}))
+                # Read off margin (EVEN, dem lead, or rep lead)
                 if poll.find_all(attrs={"class":"net hide-mobile even"}) != []:
                     poll_margin = 0
                 else:
@@ -95,6 +155,7 @@ def scrape_raw_average():
                     else:
                         # print(poll.find_all(attrs={"class":"net hide-mobile rep"}))
                         poll_margin = -int(poll.find_all(attrs={"class":"net hide-mobile rep"})[0].text[1:])
+                print(poll_margin, "poll margin ")
                 territory_margins.append(poll_margin)
                 dates.append((date - poll_date).astype(int))
         dates = np.array(dates)
