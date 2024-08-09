@@ -51,7 +51,7 @@ def load_data():
     for file in files:
         with open("results/" + file, "+r") as f:
             contents[file.split(".")[0]] = json.load(f)
-    
+    print(contents["ev_histogram"])
     state_svg_files = listdir("static/media/state_svgs")
 
     state_svgs = {}

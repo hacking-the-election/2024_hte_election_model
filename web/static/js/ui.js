@@ -321,6 +321,7 @@ function showToolTip(e) {
     var pathRect = e.target.getBoundingClientRect();
 
     var state = getKeyByValue(STATEABBR, e.target.id);
+    console.log(e.target.id)
     ttHeader.getElementsByTagName("h4")[0].innerHTML = titleCase(state);
     ttHeader.getElementsByTagName("p")[0].innerHTML = EVNUMBERS[state] + " Electoral Votes"
 

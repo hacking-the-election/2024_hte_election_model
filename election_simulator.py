@@ -9,16 +9,16 @@ from polling_error import polling_error_coeffs
 
 def run_simulations(num=50000, write=False):
     date = np.datetime64('today')
-    election_date = np.datetime64('2020-11-03')
+    election_date = np.datetime64('2024-11-05')
     coeffs = polling_error_coeffs()
     poll_error = poly.polyval((election_date-date).astype(int), coeffs)
-
     polling_averages = pd.read_csv("data/polling_averages.csv")
     territories = polling_averages["territories"]
     new_margin = polling_averages["new_margin"]
 
     score_matrix = pd.read_csv("data/state_weights.csv", index_col="Geography").to_numpy()
-
+    # Make weights more powerful
+    score_matrix = np.apply_along_axis(lambda x : np.power(x, 1/3), 1, score_matrix)
     simulations = []
     # For all simulations, randomly generate variation on each state then dot with weights
     for _ in range(num):
@@ -36,7 +36,7 @@ def run_simulations(num=50000, write=False):
 
     if write == True:
         with open("data/simulations.csv", "w") as f:
-            f.write(simulations.to_csv(index=False))
+            f.write(simulations.to_csv(index=False, lineterminator="\n"))
     else:
         return simulations
 
@@ -57,6 +57,7 @@ def analyze_simulations(simulations, state_conditionals=None, write=False):
     print(modified_simulations.columns)
     if state_conditionals:
         for state, win in state_conditionals.items():
+            # For each state/win conditional, filter to where conditional is true
             # print(type(binary_matrix[state][0]), type(win))
             modified_simulations = modified_simulations[binary_matrix[state] == int(win)]
             print(binary_matrix[state])
@@ -67,6 +68,14 @@ def analyze_simulations(simulations, state_conditionals=None, write=False):
     
     encoder = np.logspace(56, 0, num=57, base=2)
     sim_ev = np.dot(binary_matrix, electoral_votes)
+
+    dem_win_chance = len(sim_ev[sim_ev > 270])/len(modified_simulations)    
+    state_chances = [sum(binary_matrix.iloc[:,x])/len(binary_matrix) for x in range(57)]
+    if write == False:
+        state_chances_dict = {modified_simulations.columns[i]:state_chances[i] for i in range(len(state_chances))}
+        return dem_win_chance, state_chances_dict
+    
+    # Computes most common simulations for each possible electoral vote count
     most_common_simulations = {}
     for i in range(len(pd.Series(sim_ev).value_counts())):
         if pd.Series(sim_ev).value_counts().iloc[i] == 0:
@@ -85,24 +94,21 @@ def analyze_simulations(simulations, state_conditionals=None, write=False):
     if write == True:
         with open("web/results/simulations_by_ev.json", "w") as f:
             f.write(json.dumps(most_common_simulations, indent=4))
-
-    dem_win_chance = len(sim_ev[sim_ev > 270])/len(modified_simulations)    
-    state_chances = [sum(binary_matrix.iloc[:,x])/len(binary_matrix) for x in range(57)]
-    if write == False:
-        state_chances_dict = {modified_simulations.columns[i]:state_chances[i] for i in range(len(state_chances))}
-        return dem_win_chance, state_chances_dict
+    # Computes margin percentiles for each state
     twentytiles = [pd.qcut(modified_simulations.iloc[:,x], 20).value_counts().index.to_list() for x in range(57)]
     five_percentile = [min([twentytiles[y][x].right for x in range(len(twentytiles[0]))]) for y in range(len(twentytiles))]
     medians = modified_simulations.median().to_list()
     ninety_five_percentile = [max([twentytiles[y][x].left for x in range(len(twentytiles[-1]))]) for y in range(len(twentytiles))]
     percentile_state_margins = list(zip(five_percentile, medians, ninety_five_percentile))
-    ev_percentile_array = pd.qcut(sim_ev, 20, duplicates="drop").value_counts().index.to_list()
 
+    # Computes percentiles for evs
+    ev_percentile_array = pd.qcut(sim_ev, 20, duplicates="drop").value_counts().index.to_list()
     five_ev = ev_percentile_array[0].right
     median_ev = np.median(sim_ev)
     ninety_five_ev = ev_percentile_array[-1].left
     percentile_ev = (five_ev, median_ev, ninety_five_ev)
     
+    # Compute tipping point states/margins
     sorted_margins = pd.Series([modified_simulations.iloc[x].sort_values() for x in range(len(modified_simulations))])
     sorted_index = pd.Series([modified_simulations.iloc[x].argsort() for x in range(len(modified_simulations))])
     tipping_point_margins = []
@@ -123,10 +129,13 @@ def analyze_simulations(simulations, state_conditionals=None, write=False):
     state_tipping_points = []
     for state in tipping_point_states.value_counts().index:
         state_tipping_points.append(tipping_point_margins[tipping_point_states == state].median()) 
+    # Chance of being tipping point, tipping point margin by state
     tipping_point_state_data = list(zip(tipping_point_states.value_counts().index.to_list(), (tipping_point_states.value_counts()/len(modified_simulations)).to_list(), state_tipping_points))
+    # Average tipping point state margin, pop-ev average value
     tipping_point_data = (average_tipping_point, round((tipping_point_margins - modified_simulations.iloc[:, 0]).median(),3))
     
-    ev_histogram = pd.cut(sim_ev, np.linspace(min(sim_ev)-6, max(sim_ev)+5, num=max(sim_ev)-min(sim_ev)+12)).value_counts()
+    # Create histogram of electoral votes
+    ev_histogram = pd.cut(sim_ev, np.linspace(min(sim_ev)-2, max(sim_ev)+2, num=max(sim_ev)-min(sim_ev)+5)).value_counts()
     ev_histogram_tuple = list(zip([category.right for category in ev_histogram.index], ev_histogram.to_list()))
     ev_histogram_dict = {int(lists[0]) : lists[1] for lists in ev_histogram_tuple}
 
@@ -168,6 +177,6 @@ def analyze_simulations(simulations, state_conditionals=None, write=False):
         return state_chances, tipping_point_state_data, tipping_point_data, percentile_ev, percentile_state_margins, ev_histogram
 
 if __name__ == "__main__":
-    run_simulations(write=True)
+    # run_simulations(write=True)
     simulations = pd.read_csv("data/simulations.csv")
     analyze_simulations(simulations, write=True)
