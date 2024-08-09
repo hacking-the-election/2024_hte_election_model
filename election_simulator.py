@@ -18,8 +18,9 @@ def run_simulations(num=50000, write=False):
     new_margin = polling_averages["new_margin"]
 
     score_matrix = pd.read_csv("data/state_weights.csv", index_col="Geography").to_numpy()
-    score_matrix = np.apply_along_axis(lambda x : np.power(x, 1/3), 1, score_matrix)
+
     simulations = []
+    # For all simulations, randomly generate variation on each state then dot with weights
     for _ in range(num):
         variations = np.random.normal(scale=poll_error, size=[57])
         # for num,x in enumerate(score_matrix):
@@ -29,6 +30,7 @@ def run_simulations(num=50000, write=False):
         #         print(polling_averages["territories"][num], polling_averages["territories"][n], diff_sum, score_matrix[num][n], variations[n])
         new_variations = np.dot(score_matrix, variations)
         simulations.append(new_variations)
+    # Shift margins by correlated polling errors
     simulations = pd.DataFrame(simulations) + new_margin
     simulations.columns = territories
 

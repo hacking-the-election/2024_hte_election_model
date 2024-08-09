@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 def pvi_retriever(path=None):
     """
     Calculates the state pvi based on the 2012, 2016, 2020
-    presidential elections using Wikipedia infoboxes 
+    presidential elections using Wikipedia infoboxes. DOES not compute for Maine/Nebraska congressional districts.
     Args:
         path - Writes csv file to path, otherwise returns
         series.
@@ -26,7 +26,7 @@ def pvi_retriever(path=None):
         dem_percentages = []
         rep_percentages = []
         for state in score_data.columns:
-            if "-" in state or state == "District of Columbia":
+            if state == "District of Columbia":
                 continue
             print(state)
             if num == 0:
@@ -41,7 +41,7 @@ def pvi_retriever(path=None):
             dem_lead = False
             percentage_num = 0
             # Get info box
-            no = BeautifulSoup(requests.get(l).content, features="lxml").body.find(id="content").find(id="bodyContent").find(id="mw-content-text").div.find(class_="infobox")
+            no = BeautifulSoup(requests.get(l).content).body.find(id="content").find(id="bodyContent").find(id="mw-content-text").div.find(class_="infobox")
             for thing in no.tbody.tr.next_siblings:
                 # print(thing)
                 try:

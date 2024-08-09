@@ -8,6 +8,7 @@ California,23.96
 Colorado,4.42
 Connecticut,13.5
 Delaware,12.82
+District of Columbia,43
 Florida,-4.73
 Georgia,-7.73
 Hawaii,31.4
@@ -19,6 +20,8 @@ Kansas,-22.38
 Kentucky,-29.66
 Louisiana,-21.98
 Maine,5.61
+Maine-1,16.3
+Maine-2,-6.52
 Maryland,25.07
 Massachusetts,24.44
 Michigan,0.5
@@ -27,6 +30,9 @@ Mississippi,-18.78
 Missouri,-17.92
 Montana,-20.31
 Nebraska,-25.46
+Nebraska-1,-20.63
+Nebraska-2,-4.35
+Nebraska-3,-52.14
 Nevada,0.33
 New Hampshire,0.93
 New Jersey,12.43
