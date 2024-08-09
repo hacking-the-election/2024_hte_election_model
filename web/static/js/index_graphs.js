@@ -100,7 +100,7 @@ function loadPV() {
     }
 
     Object.values(GLOBAL_DATA["percentile_state_margins"]).forEach(key => {
-        val = key["National"][1]
+        val = key["national"][1]
         newDemDataset.data.push((50+(val/2)).toFixed(3))
         newRepDataset.data.push((50-(val/2)).toFixed(3))
     })
@@ -240,7 +240,7 @@ function loadHistogram(index=TOTAL_ENTRIES-1) {
     dataMin = 0;
     dataMax = 538;
     EV_HISTOGRAM = GetNthEntry(GLOBAL_DATA["ev_histogram"], index)
-    
+    console.log(EV_HISTOGRAM, GLOBAL_DATA["ev_histogram"])
     let indexBeginning = Object.keys(EV_HISTOGRAM)[0]
     for (let i = dataMin; i < indexBeginning; i++){
         EV_HISTOGRAM[i] = 0;
@@ -319,7 +319,7 @@ function loadHistogram(index=TOTAL_ENTRIES-1) {
                     },
                     ticks: {
                         min: -0.0,
-                        max: 2000,
+                        max: 1000,
                         fontColor: fontColor,
                         callback: function(value, index, values) {
                             return String((value/500).toFixed(2)) + "%";

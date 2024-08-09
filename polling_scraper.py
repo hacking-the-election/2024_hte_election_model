@@ -6,11 +6,14 @@ from math import exp
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
 
 from polling_error import polling_error_coeffs
 
 REP = "Trump"
 DEM = "Harris"
+
+global today, score_data, score_matrix, territories
 
 def time_weighting(poll_delta):
     """
@@ -28,19 +31,6 @@ def time_weighting(poll_delta):
     y = 1 + exp(3*poll_delta)
     y = 2/y
     return y
-
-def setup():
-    """
-    Initalizes some global variables for use in other functions.
-    """
-    global today, election_date, score_data, score_matrix, territories
-    today = np.datetime64('today')
-    election_date = np.datetime64('2020-11-03')
-    score_data = pd.read_csv("data/state_similarities.csv", index_col="Geography")
-    score_matrix = score_data.to_numpy()
-    territories = np.asarray(score_data.index)
-    global time_weighting 
-    time_weighting = np.vectorize(time_weighting)
 
 def date_converter(date):
     if date.find(" ") == -1:
@@ -73,6 +63,7 @@ def date_converter(date):
         poll_date = np.datetime64("2024-11-"+day)
     if "Dec." in date:
         poll_date = np.datetime64("2024-12-"+day)
+    today = np.datetime64('today')
     if today < poll_date:
         poll_date = poll_date - np.timedelta64(365, 'D')
     return poll_date
@@ -87,7 +78,11 @@ def scrape_raw_average():
             (at least one poll necessary for a state.) Uses 999 as the margin 
             for states with no data. 
     """
-    setup()
+    today = np.datetime64('today')
+    score_data = pd.read_csv("data/state_similarities.csv", index_col="Geography")
+    territories = np.asarray(score_data.index)
+    global time_weighting 
+    time_weighting = np.vectorize(time_weighting)
     time = np.datetime64(np.datetime64('now'), 'h')
     time_string = np.datetime_as_string(time, unit='h')
     to_fill = {"margin":np.zeros(len(territories)), "poll_num":np.zeros(len(territories))}
@@ -101,11 +96,18 @@ def scrape_raw_average():
         chromedriver_path= "/home/pbnjam/.cache/selenium/chromedriver/linux64/127.0.6533.99/chromedriver.exe"
         # driver = webdriver.Chrome(chromedriver_path)
         # service = Service(executable_path='C:/Program Files (x86)/Google/Chrome/Application/chrome.exe')
-        service = Service(executable_path='../chromedriver-win64/chromedriver.exe')
+        service = Service(executable_path='./chromedriver-win64/chromedriver.exe')
         options = webdriver.ChromeOptions()
         options.add_argument("--headless=new")
         driver = webdriver.Chrome(service=service, options=options)
         driver.get(link)
+        try:
+            show_more = driver.find_element(By.CLASS_NAME, 'more-polls')
+            show_more.click()
+            print("CLICKED")
+        except:
+            print("NO SHOW MORE", territory)
+            continue
         page_source = driver.page_source
         soup = BeautifulSoup(page_source, 'html.parser')
         yes = requests.get(link)
@@ -122,6 +124,9 @@ def scrape_raw_average():
             continue
         territory_margins = []
         dates = []
+        sample_weights = []
+        previous_pollster = ""
+        previous_sample_type = ""
         for x in poll_container.children:
             # Iterate through polls
             for poll in x.find_all("tr", attrs={"class":"visible-row"}):
@@ -133,11 +138,33 @@ def scrape_raw_average():
                     continue
                 print(choices)
 
+                pollster = poll.find(attrs=("pollster-name"))
+                if "SoCal Research" in pollster or "Trafalgar" in pollster or "Rasmussen" in pollster:
+                    continue
+                # Weight based on sample type (LV = 1.5, RV = 1, A = 0.5)
+                sample_type = poll.find(attrs=("sample-type"))
+                # If the poll is a repeated (i.e. expanded vs. head to head) poll
+                if previous_pollster == pollster and previous_sample_type == sample_type:
+                    continue
+                previous_pollster = pollster
+                previous_sample_type = sample_type
+                if "RV" in sample_type:
+                    sample_weights.append(1)
+                elif "V" in sample_type:
+                    sample_weights.append(1)
+                elif "A" in sample_type:
+                    sample_weights.append(0.5)
+                elif "LV" in sample_type:
+                    sample_weights.append(1.5)
+                else:
+                    print("WEIRD SAMPLE TYPE??", str(sample_type))
+
                 poll_date = poll.find(attrs={"class":"date-wrapper"}).text
                 # print(poll_date.find(" "))
                 poll_date = poll_date[:poll_date.find("-")]
                 poll_date = date_converter(poll_date)
                 print(poll_date)
+                dates.append((today - poll_date).astype(int))
                 
                 # Read off margin (EVEN, dem lead, or rep lead)
                 if poll.find_all(attrs={"class":"net hide-mobile even"}) != []:
@@ -149,10 +176,10 @@ def scrape_raw_average():
                         poll_margin = -int(poll.find_all(attrs={"class":"net hide-mobile rep"})[0].text[1:])
                 print(poll_margin, "poll margin ")
                 territory_margins.append(poll_margin)
-                dates.append((today - poll_date).astype(int))
         dates = np.array(dates)
         try:
-            weights = time_weighting(dates/max(dates))
+            # Ratio of days passed over a month
+            time_weights = time_weighting(dates/30)
         except ValueError:
             territory_averages.iat[num,0] = 999
             territory_averages.iat[num,1] = 0
@@ -163,15 +190,22 @@ def scrape_raw_average():
                 territory_averages.iat[num,1] = 0
                 continue
         try:
-            territory_average = sum(territory_margins*weights)/sum(weights)
+            # Take double weighted (time weighted and sample type weighted) 
+            total_weights = time_weights * sample_weights
+            territory_average = sum(territory_margins*total_weights)/sum(total_weights)
+            print(territory_average, sample_weights, time_weights, total_weights)
         except ZeroDivisionError:
             territory_averages.iat[num,0] = 999
             territory_averages.iat[num,1] = 0
             continue
         territory_averages.iat[num,0] = territory_average
-        territory_averages.iat[num,1] = len(territory_margins)/max(dates)
+        # territory_averages.iat[num,1] = len(territory_margins)/max(dates)
+        territory_averages.iat[num,1] = sum(time_weights)
+        print(territory_averages, np.cbrt(len(territory_margins)/max(dates))
+)
 
     # Generate percentage (number of polls / how long since oldest poll)
+    territory_averages["poll_num"] /= max(territory_averages["poll_num"])
     territory_averages["percentage"] = np.cbrt(territory_averages["poll_num"])
 
     with open("data/raw_averages.csv", "w") as f:
@@ -186,7 +220,11 @@ def refine_polling():
     state similarity scores. Also calculates expected margins 
     for states without polling.
     """
-    setup()
+    # definitions
+    score_data = pd.read_csv("data/state_similarities.csv", index_col="Geography")
+    score_matrix = score_data.to_numpy()
+    territories = np.asarray(score_data.index)
+
     territory_averages = pd.read_csv("data/raw_averages.csv")
     lean_data = pd.read_csv("data/state_pvi.csv")
     lean_data["territories"] = lean_data["territories"].str.lower()
@@ -196,31 +234,39 @@ def refine_polling():
     for key, series in territory_averages.items():
         lean_data[key] = series
     # Calculate how much democrats are overperforming predicted margin (tilt)
-    lean_data["dem difference"] = lean_data["margin"]-lean_data["predicted_margin"]
+    print(lean_data["margin"], lean_data["predicted_margin"])
+    dem_difference = []
+    for i in range(len(territories)):
+        if lean_data["margin"].iloc[i] in [0, 999]:
+            dem_difference.append(0)
+        else:
+            dem_difference.append(lean_data["margin"].iloc[i]-lean_data["predicted_margin"].iloc[i])
+    lean_data["dem difference"] = pd.Series(dem_difference)
     lean_data.drop(["pvi","poll_num"],axis=1,inplace=True)
     deviation_vector = lean_data["dem difference"].to_numpy()
     # print(deviation_vector)
     # Create state weights based on state similarities percentage 
     for num, weight in enumerate(lean_data["percentage"]):
-        # Weight on state polls highly
+        # Weight on state polls highly, especially those for the state itself, multiplied by percentage
+        # (roughly) how many polls there are
         score_matrix[num,num] = (weight+2) ** 5
         score_matrix[num] *= lean_data["percentage"]
         score_matrix[num] /= sum(score_matrix[num])
-    # Make weights more powerful
-    score_matrix = np.apply_along_axis(lambda x : np.power(x, 1/3), 1, score_matrix)
+
     with open("data/state_weights.csv", "w") as f:
         modified_score_data = pd.DataFrame(np.around(score_matrix,3))
         modified_score_data.columns = territories
         modified_score_data.index = territories
         modified_score_data.index.name = "Geography"
-        f.write(modified_score_data.to_csv())
+        f.write(modified_score_data.to_csv(lineterminator="\n"))
     # for num,x in enumerate(score_matrix):
     #     diff_sum = 0
     #     for n, y in enumerate(x):
     #         diff_sum += y * deviation_vector[n]
             # print(lean_data["territories"][num], lean_data["territories"][n], diff_sum, score_matrix[num][n])
     new_deviation_vector = np.dot(score_matrix, deviation_vector)
-    # print(new_deviation_vector)
+    print(lean_data["dem difference"])
+    print(new_deviation_vector, "new vector")
     new_margin = new_deviation_vector.reshape(len(new_deviation_vector)) + lean_data["predicted_margin"]
     lean_data["new_margin"] = new_margin
     poll_data = lean_data["new_margin"]
@@ -231,5 +277,5 @@ def refine_polling():
 
 
 if __name__ == "__main__":
-    # scrape_raw_average()
+    scrape_raw_average()
     refine_polling()

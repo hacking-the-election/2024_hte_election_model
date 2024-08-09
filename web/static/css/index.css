@@ -263,13 +263,13 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .state-name.dem {
-    left: 51.6%;
+    left: 30%;
     position: absolute;
 }
 
 .state-name.rep {
     position: absolute;
-    right: 45%;
+    right: 30%;
 }
 
 .state-amount.dem {

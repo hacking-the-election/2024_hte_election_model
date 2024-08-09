@@ -26,7 +26,7 @@ def pvi_retriever(path=None):
         dem_percentages = []
         rep_percentages = []
         for state in score_data.columns:
-            if state == "District of Columbia":
+            if "-" in state or state == "District of Columbia":
                 continue
             print(state)
             if num == 0:
@@ -92,7 +92,12 @@ def pvi_retriever(path=None):
         # margins = things[::2]-things[1::2]
         pvi = margins[1:]-margins[0]
         print(margins, pvi)
-        average_pvi += pvi
+        if num == 0:
+            average_pvi += 0.5 * pvi
+        if num == 1:
+            average_pvi += pvi
+        if num == 2:
+            average_pvi += 1.5 * pvi
     # Average pvi out between the three elections
     average_pvi = average_pvi/3
     # np.insert(average_pvi, 0, "National")
@@ -103,7 +108,7 @@ def pvi_retriever(path=None):
         with open("./data/state_pvi.csv", "w") as f:
                 pvi.index = states
                 pvi.index.name = "territories"
-                f.write(pvi.round(2).to_csv())
+                f.write(pvi.round(2).to_csv(lineterminator="\n"))
     return pvi
 
 if __name__ == "__main__":
