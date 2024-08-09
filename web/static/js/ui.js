@@ -88,7 +88,7 @@ function headerSelection(heading){
 }
 
 function setStatsBarSize(statsBar, width) {
-    statsBar.getElementsByClassName("biden")[0].style.width = "calc(" + width + "% - 2px)"
+    statsBar.getElementsByClassName("harris")[0].style.width = "calc(" + width + "% - 2px)"
     statsBar.getElementsByClassName("trump")[0].style.width = "calc(" + (100 - width) + "% - 2px";
 }
 
@@ -131,7 +131,8 @@ function addMapEventListener() {
     let mapTimeline = document.getElementById("map-timeline");
     let currentLength = 0;
 
-    let simDate = Object.keys(GLOBAL_DATA["dem_win_chance"])[mapTimeline.value]
+    let simDate = Object.keys(GLOBAL_DATA["dem_win_chance"])[mapTimeline.value-1]
+    // console.log(GLOBAL_DATA["dem_win_chance"])
     simDate = simDate.slice(5, 7) + '/' + simDate.slice(8, 10) + " " + simDate.slice(11, 13) + "H"
     let lastTimelineValues = [simDate, simDate]
     mapTimeline.addEventListener("input", function() {
@@ -325,7 +326,7 @@ function showToolTip(e) {
 
     var bidenChance = CONDITIONAL_STATE_CHANCES[state];
 
-    document.getElementById("tt-biden-chance").innerHTML = (Math.round(1000 * bidenChance) / 10) + "%";
+    document.getElementById("tt-harris-chance").innerHTML = (Math.round(1000 * bidenChance) / 10) + "%";
     document.getElementById("tt-trump-chance").innerHTML = (Math.round(1000 * (1-bidenChance)) / 10) + "%";
     
     var statsBar = toolTipEl.getElementsByClassName("stats-bar")[0];

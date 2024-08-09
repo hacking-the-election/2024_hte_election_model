@@ -1,6 +1,6 @@
 function loadWinChance() {
     newDemDataset = {
-        label: "Biden",
+        label: "Harris",
         data: [],
         fill: false,
         borderColor: getCssletiable("--dem-bg"),
@@ -40,7 +40,7 @@ function loadWinChance() {
 
 function loadEV() {
     newDemDataset = {
-        label: "Biden",
+        label: "Harris",
         data: [],
         fill: false,
         borderColor: getCssletiable("--dem-bg"),
@@ -82,7 +82,7 @@ function loadEV() {
 
 function loadPV() {
     newDemDataset = {
-        label: "Biden",
+        label: "Harris",
         data: [],
         fill: false,
         borderColor: getCssletiable("--dem-bg"),
@@ -100,7 +100,7 @@ function loadPV() {
     }
 
     Object.values(GLOBAL_DATA["percentile_state_margins"]).forEach(key => {
-        val = key["national"][1]
+        val = key["National"][1]
         newDemDataset.data.push((50+(val/2)).toFixed(3))
         newRepDataset.data.push((50-(val/2)).toFixed(3))
     })
@@ -155,7 +155,7 @@ function loadLineChart(){
         data: {
             labels: labels,
             datasets: [{
-                label: "Biden",
+                label: "Harris",
                 data: demWinChance,
                 fill: false,
                 borderColor: getCssletiable("--dem-bg"),

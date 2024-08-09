@@ -432,7 +432,7 @@ input[type="range"]::-moz-range-thumb {
     display: inline-block;
 }
 
-#tool-tip-caption .biden {
+#tool-tip-caption .harris {
     text-align: left;
 }
 
@@ -495,7 +495,7 @@ input[type="range"]::-moz-range-thumb {
     justify-content: space-between;
 }
 
-#candidates #biden {
+#candidates #harris {
     text-align: left;
 }
 
@@ -519,7 +519,7 @@ input[type="range"]::-moz-range-thumb {
     border-radius: 50%;
 }
 
-#img-stats-wrapper img.biden {
+#img-stats-wrapper img.harris {
     border-color: var(--dem-bg);
 }
 
@@ -534,7 +534,7 @@ input[type="range"]::-moz-range-thumb {
     font-weight: 400;
 }
 
-.win-prob.biden {
+.win-prob.harris {
     /*Can probably devise better spacing method, i.e. setting bar width*/
     margin-right: 100px;
 }
@@ -577,7 +577,7 @@ input[type="range"]::-moz-range-thumb {
     transition: width 0.1s;
 }
 
-.stats-segment.biden {
+.stats-segment.harris {
     float: left;
     background-color: var(--dem-bg);
     border-right: 1px solid var(--card-bg);
@@ -606,7 +606,7 @@ input[type="range"]::-moz-range-thumb {
     padding: 10px;
 }
 
-.stats-section span.biden {
+.stats-section span.harris {
     float: left;
 }
 

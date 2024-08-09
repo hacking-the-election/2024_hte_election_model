@@ -16,125 +16,117 @@ Chart.Legend.prototype.afterFit = function() {
 };
 
 const STATEABBR = {
-    "alabama": "AL",
-    "alaska": "AK",
-    "american samoa": "AS",
-    "arizona": "AZ",
-    "arkansas": "AR",
-    "california": "CA",
-    "colorado": "CO",
-    "connecticut": "CT",
-    "delaware": "DE",
-    "district of columbia": "DC",
-    "southeast": "SE",
-    "federated states of micronesia": "FM",
-    "florida": "FL",
-    "georgia": "GA",
-    "great plains": "GP",
-    "guam": "GU",
-    "hawaii": "HI",
-    "idaho": "ID",
-    "illinois": "IL",
-    "indiana": "IN",
-    "iowa": "IA",
-    "kansas": "KS",
-    "kentucky": "KY",
-    "louisiana": "LA",
-    "maine": "ME",
-    "maine-2": "ME-2",
-    "marshall islands": "MH",
-    "maryland": "MD",
-    "massachusetts": "MA",
-    "michigan": "MI",
-    "north+Northeast": "NO",
-    "minnesota": "MN",
-    "mississippi": "MS",
-    "missouri": "MO",
-    "montana": "MT",
-    "nebraska": "NE",
-    "nebraska-1": "NE-1",
-    "nebraska-2": "NE-2",
-    "nevada": "NV",
-    "new hampshire": "NH",
-    "new jersey": "NJ",
-    "new mexico": "NM",
-    "new york": "NY",
-    "north carolina": "NC",
-    "north dakota": "ND",
-    "northern mariana islands": "MP",
-    "ohio": "OH",
-    "oklahoma": "OK",
-    "oregon": "OR",
-    "palau": "PW",
-    "pennsylvania": "PA",
-    "puerto rico": "PR",
-    "rhode island": "RI",
-    "south carolina": "SC",
-    "south dakota": "SD",
-    "tennessee": "TN",
-    "texas": "TX",
-    "utah": "UT",
-    "vermont": "VT",
-    "virgin islands": "VI",
-    "virginia": "VA",
-    "washington": "WA",
-    "southwest": "SW",
-    "west virginia": "WV",
-    "wisconsin": "WI",
-    "wyoming": "WY"
+    "Alabama": "AL",
+    "Alaska": "AK",
+    "Arizona": "AZ",
+    "Arkansas": "AR",
+    "California": "CA",
+    "Colorado": "CO",
+    "Connecticut": "CT",
+    "Delaware": "DE",
+    "District of Columbia": "DC",
+    "Southeast": "SE",
+    "Florida": "FL",
+    "Georgia": "GA",
+    "Great Plains": "GP",
+    "Hawaii": "HI",
+    "Idaho": "ID",
+    "Illinois": "IL",
+    "Indiana": "IN",
+    "Iowa": "IA",
+    "Kansas": "KS",
+    "Kentucky": "KY",
+    "Louisiana": "LA",
+    "Maine": "ME",
+    "Maine-2": "ME-2",
+    "Maryland": "MD",
+    "Massachusetts": "MA",
+    "Michigan": "MI",
+    "North+Northeast": "NO",
+    "Minnesota": "MN",
+    "Mississippi": "MS",
+    "Missouri": "MO",
+    "Montana": "MT",
+    "Nebraska": "NE",
+    "Nebraska-1": "NE-1",
+    "Nebraska-2": "NE-2",
+    "Nevada": "NV",
+    "New Hampshire": "NH",
+    "New Jersey": "NJ",
+    "New Mexico": "NM",
+    "New York": "NY",
+    "North Carolina": "NC",
+    "North Dakota": "ND",
+    "Ohio": "OH",
+    "Oklahoma": "OK",
+    "Oregon": "OR",
+    "Pennsylvania": "PA",
+    "Rhode Island": "RI",
+    "South Carolina": "SC",
+    "South Dakota": "SD",
+    "Tennessee": "TN",
+    "Texas": "TX",
+    "Utah": "UT",
+    "Vermont": "VT",
+    "Virginia": "VA",
+    "Washington": "WA",
+    "Southwest": "SW",
+    "West Virginia": "WV",
+    "Wisconsin": "WI",
+    "Wyoming": "WY"
 }
 
 let EVNUMBERS = {
-    "california": 55,
-    "texas": 38,
-    "new york": 29,
-    "florida": 29,
-    "pennsylvania": 20,
-    "illinois": 20,
-    "ohio": 18,
-    "michigan": 16,
-    "georgia": 16,
-    "north carolina": 15,
-    "new jersey": 14,
-    "virginia": 13,
-    "washington": 12,
-    "tennessee": 11,
-    "massachusetts": 11,
-    "indiana": 11,
-    "arizona": 11,
-    "wisconsin": 10,
-    "missouri": 10,
-    "minnesota": 10,
-    "maryland": 10,
-    "south carolina": 9,
-    "colorado": 9,
-    "alabama": 9,
-    "louisiana": 8,
-    "kentucky": 8,
-    "oregon": 7,
-    "oklahoma": 7,
-    "connecticut": 7,
-    "utah": 6,
-    "nevada": 6,
-    "mississippi": 6,
-    "kansas": 6,
-    "iowa": 6,
-    "arkansas": 6,
-    "west virginia": 5,
-    "new mexico": 5,
-    "nebraska": 5,
-    "rhode island": 4,
-    "new hampshire": 4,
-    "maine": 4,
-    "idaho": 4,
-    "hawaii": 4,
-    "wyoming": 3,
-    "vermont": 3,
-    "south dakota": 3,
-    "north dakota": 3,
-    "montana": 3,
-    "delaware": 3,
-    "alaska": 3
+    "California": 54,
+    "Texas": 40,
+    "New York": 28,
+    "Florida": 30,
+    "Pennsylvania": 19,
+    "Illinois": 19,
+    "Ohio": 17,
+    "Michigan": 15,
+    "Georgia": 16,
+    "North Carolina": 16,
+    "New Jersey": 14,
+    "Virginia": 13,
+    "Washington": 12,
+    "Tennessee": 11,
+    "Massachusetts": 11,
+    "Indiana": 11,
+    "Arizona": 11,
+    "Wisconsin": 10,
+    "Missouri": 10,
+    "Minnesota": 10,
+    "Maryland": 10,
+    "South Carolina": 9,
+    "Colorado": 10,
+    "Alabama": 9,
+    "Louisiana": 8,
+    "Kentucky": 8,
+    "Oregon": 8,
+    "Oklahoma": 7,
+    "Connecticut": 7,
+    "Utah": 6,
+    "Nevada": 6,
+    "Mississippi": 6,
+    "Kansas": 6,
+    "Iowa": 6,
+    "Arkansas": 6,
+    "West Virginia": 4,
+    "New Mexico": 5,
+    "Nebraska": 5,
+    "Rhode Island": 4,
+    "New Hampshire": 4,
+    "Maine": 4,
+    "Idaho": 4,
+    "Hawaii": 4,
+    "Wyoming": 3,
+    "Vermont": 3,
+    "South Dakota": 3,
+    "North Dakota": 3,
+    "Montana": 4,
+    "Delaware": 3,
+    "Alaska": 3
 }
 
 
@@ -166,13 +158,13 @@ function parseData(rt) {
     STATE_SVGS = GLOBAL_DATA[1];
     GLOBAL_DATA = GLOBAL_DATA[0];
     TOTAL_ENTRIES = Object.keys(GLOBAL_DATA["dem_win_chance"]).length;
-
+    console.log(GetNthEntry(GLOBAL_DATA["percentile_state_margins"], TOTAL_ENTRIES - 1))
 
     // Load specific data entries into useful lets
     DEM_WIN_CHANCE = GetNthEntry(GLOBAL_DATA["dem_win_chance"], TOTAL_ENTRIES - 1)["dem"]
     CONDITIONAL_DEM_WIN_CHANCE = GetNthEntry(GLOBAL_DATA["dem_win_chance"], TOTAL_ENTRIES - 1)["dem"]
     DEM_ELECTORAL_VOTES = GetNthEntry(GLOBAL_DATA["percentile_ev"], TOTAL_ENTRIES - 1)["median"]
-    DEM_POPULAR_VOTE = GetNthEntry(GLOBAL_DATA["percentile_state_margins"], TOTAL_ENTRIES - 1)["national"][1]
+    DEM_POPULAR_VOTE = GetNthEntry(GLOBAL_DATA["percentile_state_margins"], TOTAL_ENTRIES - 1)["National"][1]
     STATE_MARGINS = GLOBAL_DATA["percentile_state_margins"]
     SIMULATIONS_BY_EV = GLOBAL_DATA["simulations_by_ev"]
     STATE_CHANCES = GLOBAL_DATA["state_chances"]
@@ -185,6 +177,7 @@ function parseData(rt) {
     
     if (document.title == "Predictions | hte_election_model") {
         openPage();
+        console.log("PAGE OPENED")
     }
     else if (document.title == "States | hte_election_model") {
         openStatesPage();
@@ -308,7 +301,7 @@ function getMapCss(data, id_prefix="") {
 function loadData(yes, state_conditional=undefined) {
     let xhr = new XMLHttpRequest();
     // state_conditional = undefined
-    console.log(state_conditional)
+    console.log(state_conditional, "state conditional")
     if (state_conditional != undefined) {
         xhr.onreadystatechange = function() { 
             if (xhr.readyState == 4 && xhr.status == 200) {
@@ -327,6 +320,7 @@ function loadData(yes, state_conditional=undefined) {
         console.log("yes!")
         xhr.onreadystatechange = function() { 
             if (xhr.readyState == 4 && xhr.status == 200) {
+                console.log("ON READY STATE CHANGE")
                 parseData(xhr.responseText);
             }
         }
@@ -353,16 +347,16 @@ function hexToRgb(hex) {
 
 function openPage() {
     let bars = document.getElementsByClassName("stats-bar");
-    document.querySelectorAll(".win-prob.biden")[0].innerHTML = Math.round(DEM_WIN_CHANCE * 1000) / 10 + "%"
+    document.querySelectorAll(".win-prob.harris")[0].innerHTML = Math.round(DEM_WIN_CHANCE * 1000) / 10 + "%"
     document.querySelectorAll(".win-prob.trump")[0].innerHTML = Math.round((100.0 - (DEM_WIN_CHANCE * 100.0)) * 10) / 10 + "%"
     setStatsBarSize(bars[0], DEM_WIN_CHANCE * 100);
 
-    document.querySelectorAll("#electoral span.biden")[0].innerHTML = DEM_ELECTORAL_VOTES
+    document.querySelectorAll("#electoral span.harris")[0].innerHTML = DEM_ELECTORAL_VOTES
     document.querySelectorAll("#electoral span.trump")[0].innerHTML = MAX_VOTES - DEM_ELECTORAL_VOTES
     setStatsBarSize(bars[1], (DEM_ELECTORAL_VOTES / MAX_VOTES) * 100);
 
 
-    document.querySelectorAll("#popular span.biden")[0].innerHTML = Math.round(10 * (50 + (DEM_POPULAR_VOTE / 2))) / 10 + "%"
+    document.querySelectorAll("#popular span.harris")[0].innerHTML = Math.round(10 * (50 + (DEM_POPULAR_VOTE / 2))) / 10 + "%"
     document.querySelectorAll("#popular span.trump")[0].innerHTML = 100 - (Math.round(10 * (50 + (DEM_POPULAR_VOTE / 2))) / 10) + "%"
     setStatsBarSize(bars[2], 50 + (DEM_POPULAR_VOTE / 2));
     document.getElementById("updated").children[0].innerHTML = "Updated " + SIMULATION_DATE
@@ -394,7 +388,7 @@ function openPage() {
     tippingPointAmount.innerHTML = TIPPING_POINT_DATA["average tipping point"].toFixed(1) + "%"
     popevAmount.innerHTML = Math.abs(TIPPING_POINT_DATA["pop-ev split"]).toFixed(1) + "%"
     if (TIPPING_POINT_DATA["pop-ev split"] > 0) {
-        favored.innerHTML = "Biden"
+        favored.innerHTML = "Harris"
     }
     else {
         favored.innerHTML = "Trump"
@@ -491,7 +485,7 @@ function loadWhatif() {
     winChance.id = "what-if-win-chance"
     let winChanceText = document.createElement("p")
     winChanceText.id = "what-if-win-chance-text"
-    winChanceText.innerHTML = "Chance of Biden win:"
+    winChanceText.innerHTML = "Chance of Harris win:"
     let winChanceChance = document.createElement("p")
     winChanceChance.id = "what-if-win-chance-chance"
     winChanceChance.innerHTML = String((DEM_WIN_CHANCE * 100).toFixed(1)) + "%"

@@ -152,12 +152,12 @@ function retrieveData(states, mode) {
     mode is an argument that either takes "pv" or doesn't depending on which mode
     to set the graph to
     */
-   console.log(states)
-    let data = {}
-    if (mode == "pv") {
-        Object.keys(STATE_MARGINS).forEach(time => {
-            let sum = 0;
-            states.forEach(state => {
+   let data = {}
+   if (mode == "pv") {
+       Object.keys(STATE_MARGINS).forEach(time => {
+           let sum = 0;
+           states.forEach(state => {
+                console.log(STATE_MARGINS[time])
                 let value = STATE_MARGINS[time][STATEUNABBR[state]][1]
                 sum += value;
             })
