@@ -1,4 +1,5 @@
 import numpy as np 
+import os
 import numpy.polynomial.polynomial as poly
 import pandas as pd 
 import requests
@@ -12,6 +13,7 @@ from polling_error import polling_error_coeffs
 
 REP = "Trump"
 DEM = "Harris"
+
 
 global today, score_data, score_matrix, territories
 
@@ -79,7 +81,7 @@ def scrape_raw_average():
             for states with no data. 
     """
     today = np.datetime64('today')
-    score_data = pd.read_csv("data/state_similarities.csv", index_col="Geography")
+    score_data = pd.read_csv(os.path.dirname(os.path.abspath(__file__)) + "data/state_similarities.csv", index_col="Geography")
     territories = np.asarray(score_data.index)
     global time_weighting 
     time_weighting = np.vectorize(time_weighting)
@@ -208,7 +210,7 @@ def scrape_raw_average():
     territory_averages["poll_num"] /= max(territory_averages["poll_num"])
     territory_averages["percentage"] = np.cbrt(territory_averages["poll_num"])
 
-    with open("data/raw_averages.csv", "w") as f:
+    with open(os.path.dirname(os.path.abspath(__file__)) + "data/raw_averages.csv", "w") as f:
         f.write(territory_averages.to_csv(lineterminator="\n"))
     # territory_averages["percentage"] /= sum(territory_averages["percentage"])
     # print(territory_averages["percentage"])
@@ -221,12 +223,12 @@ def refine_polling():
     for states without polling.
     """
     # definitions
-    score_data = pd.read_csv("data/state_similarities.csv", index_col="Geography")
+    score_data = pd.read_csv(os.path.dirname(os.path.abspath(__file__)) + "data/state_similarities.csv", index_col="Geography")
     score_matrix = score_data.to_numpy()
     territories = np.asarray(score_data.index)
 
-    territory_averages = pd.read_csv("data/raw_averages.csv")
-    lean_data = pd.read_csv("data/state_pvi.csv")
+    territory_averages = pd.read_csv(os.path.dirname(os.path.abspath(__file__)) + "data/raw_averages.csv")
+    lean_data = pd.read_csv(os.path.dirname(os.path.abspath(__file__)) + "data/state_pvi.csv")
     lean_data["territories"] = lean_data["territories"].str.lower()
     lean_data['pvi'] = lean_data['pvi'].astype(float)
     # Estimate what margins should be based on PVI + national polling average
@@ -253,7 +255,7 @@ def refine_polling():
         score_matrix[num] *= lean_data["percentage"]
         score_matrix[num] /= sum(score_matrix[num])
 
-    with open("data/state_weights.csv", "w") as f:
+    with open(os.path.dirname(os.path.abspath(__file__)) + "data/state_weights.csv", "w") as f:
         modified_score_data = pd.DataFrame(np.around(score_matrix,3))
         modified_score_data.columns = territories
         modified_score_data.index = territories
@@ -271,7 +273,7 @@ def refine_polling():
     lean_data["new_margin"] = new_margin
     poll_data = lean_data["new_margin"]
     poll_data.index = lean_data["territories"]
-    with open("data/polling_averages.csv", "w") as f:
+    with open(os.path.dirname(os.path.abspath(__file__)) + "data/polling_averages.csv", "w") as f:
         f.write(poll_data.to_csv(lineterminator="\n"))
     # print(lean_data.sort_values("new_margin"))
 
