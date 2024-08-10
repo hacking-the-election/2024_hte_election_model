@@ -29,7 +29,9 @@ function loadWinChance() {
 
     lineConfig.data.datasets.splice(0,2);
     lineConfig.data.datasets.push(newDemDataset, newRepDataset)
-    lineConfig.options.scales.yAxes[0].ticks.max = 100;
+    // lineConfig.options.scales.yAxes[0].ticks.max = 100;
+    lineConfig.options.scales.yAxes[0].ticks.max = Math.ceil(Math.max(Math.max(...newDemDataset.data), Math.max(...newRepDataset.data)) / 10) * 10;
+    lineConfig.options.scales.yAxes[0].ticks.min = Math.floor(Math.min(Math.min(...newDemDataset.data), Math.min(...newRepDataset.data)) / 10) * 10;
     lineConfig.options.scales.yAxes[0].ticks.stepSize = 10;
     lineConfig.options.scales.yAxes[0].gridLines.color = gridLineColor;
     lineConfig.options.scales.yAxes[0].ticks.callback = function(value, index, values) {
@@ -71,6 +73,8 @@ function loadEV() {
     gridLineColor[5] = getCssletiable("--section-bg");
 
     lineConfig.options.scales.yAxes[0].ticks.max = 538;
+    lineConfig.options.scales.yAxes[0].ticks.max = Math.ceil(Math.max(Math.max(...newDemDataset.data), Math.max(...newRepDataset.data)) / 10) * 10;
+    lineConfig.options.scales.yAxes[0].ticks.min = Math.floor(Math.min(Math.min(...newDemDataset.data), Math.min(...newRepDataset.data)) / 10) * 10;
     lineConfig.options.scales.yAxes[0].ticks.stepSize = 54;
     lineConfig.options.scales.yAxes[0].gridLines.color = gridLineColor;
     lineConfig.options.scales.yAxes[0].ticks.callback = function(value, index, values) {
@@ -111,7 +115,8 @@ function loadPV() {
 
     lineConfig.data.datasets.splice(0,2)
     lineConfig.data.datasets.push(newDemDataset, newRepDataset)
-    lineConfig.options.scales.yAxes[0].ticks.max = 100;
+    lineConfig.options.scales.yAxes[0].ticks.max = Math.ceil(Math.max(Math.max(...newDemDataset.data), Math.max(...newRepDataset.data)) / 10) * 10;
+    lineConfig.options.scales.yAxes[0].ticks.min = Math.floor(Math.min(Math.min(...newDemDataset.data), Math.min(...newRepDataset.data)) / 10) * 10;
     lineConfig.options.scales.yAxes[0].ticks.stepSize = 10;
     lineConfig.options.scales.yAxes[0].gridLines.color = gridLineColor;
     lineConfig.options.scales.yAxes[0].ticks.callback = function(value, index, values) {
@@ -143,7 +148,9 @@ function loadLineChart(){
         demWinChance.push((val*100).toFixed(3))
         repWinChance.push((100-val*100).toFixed(3))
     })
-
+    min_chance = Math.min(Math.min(...demWinChance), Math.min(...repWinChance))
+    max_chance = Math.max(Math.max(...demWinChance), Math.max(...repWinChance))
+    console.log(Math.min(demWinChance))
     let muteColor = "rgb(40, 60, 70)";
     let brightColor = getCssletiable("--section-bg");
 
@@ -185,8 +192,8 @@ function loadLineChart(){
             scales: {
                 yAxes: [{
                     ticks: {
-                        min: 0.0,
-                        max: 100,
+                        min: Math.floor(min_chance / 10)*10,
+                        max: Math.ceil(max_chance / 10)*10,
                         fontColor: getCssletiable("--section-bg"),
                         stepSize: 10,
                         callback: function(value, index, values) {

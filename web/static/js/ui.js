@@ -322,13 +322,19 @@ function showToolTip(e) {
     ttHeader.getElementsByTagName("h4")[0].innerHTML = titleCase(state);
     ttHeader.getElementsByTagName("p")[0].innerHTML = EVNUMBERS[state] + " Electoral Votes"
 
-    var bidenChance = CONDITIONAL_STATE_CHANCES[state];
+    if (whatifMode) {
+            var harrisChance = CONDITIONAL_STATE_CHANCES[state];
+    }
+    else {
+        let mapTimeline = document.getElementById("map-timeline");
+        var harrisChance = GetNthEntry(GLOBAL_DATA["state_chances"], mapTimeline.value)[state];
+    }
 
-    document.getElementById("tt-harris-chance").innerHTML = (Math.round(1000 * bidenChance) / 10) + "%";
-    document.getElementById("tt-trump-chance").innerHTML = (Math.round(1000 * (1-bidenChance)) / 10) + "%";
+    document.getElementById("tt-harris-chance").innerHTML = (Math.round(1000 * harrisChance) / 10) + "%";
+    document.getElementById("tt-trump-chance").innerHTML = (Math.round(1000 * (1-harrisChance)) / 10) + "%";
     
     var statsBar = toolTipEl.getElementsByClassName("stats-bar")[0];
-    setStatsBarSize(statsBar, bidenChance * 100)
+    setStatsBarSize(statsBar, harrisChance * 100)
 
     // Calculate the top and left positions
     var top = pathRect.top - parentRect.top;
