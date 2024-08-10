@@ -57,12 +57,10 @@ function mapHeaderSelection(heading) {
             loadWhatif()
         }
     }
-    console.log(heading)
 }
 
 function headerSelection(heading){
     headers = document.getElementsByClassName("heading")
-    console.log(headers)
     for (let event_index=2; event_index < 5; event_index++){
         if (headers[event_index].classList.contains("non-active")){
             if (heading == headers[event_index]){
@@ -321,7 +319,6 @@ function showToolTip(e) {
     var pathRect = e.target.getBoundingClientRect();
 
     var state = getKeyByValue(STATEABBR, e.target.id);
-    console.log(e.target.id)
     ttHeader.getElementsByTagName("h4")[0].innerHTML = titleCase(state);
     ttHeader.getElementsByTagName("p")[0].innerHTML = EVNUMBERS[state] + " Electoral Votes"
 

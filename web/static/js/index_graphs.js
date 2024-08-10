@@ -240,7 +240,6 @@ function loadHistogram(index=TOTAL_ENTRIES-1) {
     dataMin = 0;
     dataMax = 538;
     EV_HISTOGRAM = GetNthEntry(GLOBAL_DATA["ev_histogram"], index)
-    console.log(EV_HISTOGRAM, GLOBAL_DATA["ev_histogram"])
     let indexBeginning = Object.keys(EV_HISTOGRAM)[0]
     for (let i = dataMin; i < indexBeginning; i++){
         EV_HISTOGRAM[i] = 0;

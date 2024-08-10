@@ -13,11 +13,11 @@ def run_simulations(num=50000, write=False):
     election_date = np.datetime64('2024-11-05')
     coeffs = polling_error_coeffs()
     poll_error = poly.polyval((election_date-date).astype(int), coeffs)
-    polling_averages = pd.read_csv(os.path.dirname(os.path.abspath(__file__)) + "data/polling_averages.csv")
+    polling_averages = pd.read_csv(os.path.dirname(os.path.abspath(__file__)) + "/data/polling_averages.csv")
     territories = polling_averages["territories"]
     new_margin = polling_averages["new_margin"]
 
-    score_matrix = pd.read_csv(os.path.dirname(os.path.abspath(__file__)) + "data/state_weights.csv", index_col="Geography").to_numpy()
+    score_matrix = pd.read_csv(os.path.dirname(os.path.abspath(__file__)) + "/data/state_weights.csv", index_col="Geography").to_numpy()
     # Make weights more powerful
     score_matrix = np.apply_along_axis(lambda x : np.power(x, 1/3), 1, score_matrix)
     simulations = []
@@ -179,5 +179,5 @@ def analyze_simulations(simulations, state_conditionals=None, write=False):
 
 if __name__ == "__main__":
     # run_simulations(write=True)
-    simulations = pd.read_csv(os.path.dirname(os.path.abspath(__file__)) + "data/simulations.csv")
+    simulations = pd.read_csv(os.path.dirname(os.path.abspath(__file__)) + "/data/simulations.csv")
     analyze_simulations(simulations, write=True)

@@ -47,7 +47,6 @@ function loadStateLineChart(mode){
     stateTickColors[5] = "#FFFFFF"
     // stateTickColors[0] = "000000"
 
-    console.log(stateTickColors)
     let times = []
     Object.keys(STATE_CHANCES).forEach(time => {
         times.push(time)
@@ -138,7 +137,6 @@ function loadStateLineChart(mode){
         stateLineConfig.options.scales.yAxes[0].gridLines.zeroLineColor = "rgb(255, 104, 104)"
         stateLineConfig.options.scales.xAxes[0].gridLines.zeroLineColor = "rgb(255,255,255)"
     }
-    console.log(stateLineConfig)
     for (let state of stateResults) {
         addGraphState(state, mode)
     }
@@ -157,7 +155,6 @@ function retrieveData(states, mode) {
        Object.keys(STATE_MARGINS).forEach(time => {
            let sum = 0;
            states.forEach(state => {
-                console.log(STATE_MARGINS[time])
                 let value = STATE_MARGINS[time][STATEUNABBR[state]][1]
                 sum += value;
             })
@@ -175,7 +172,6 @@ function retrieveData(states, mode) {
             data[time] = (100 * sum/states.length).toFixed(3);
         })
     }
-    console.log(data)
     return data;
 }
 
@@ -199,7 +195,6 @@ function addGraphState(state, mode) {
     let currentDataColors = []
     let dataColor = dataColors[(stateResults.indexOf(state)) % dataColors.length]
     
-    console.log(STATEUNABBR[state])
     let dataDict = {
         label: capitalize(STATEUNABBR[state]),
         data: Object.values(data),
@@ -215,15 +210,12 @@ function addGraphState(state, mode) {
 
 function removeGraphState(state) {
     let dataset = configuredStateLineChart["data"]["datasets"]
-    console.log(stateColors, state)
     dataset.splice(stateResults.indexOf(state),1);
-    console.log(dataset)
     for (let i = 0; i < dataset.length; i++) {
         dataset[i]["pointBackgroundColor"] = dataColors[i % DATA_COLORS_LEN]
         dataset[i]["pointBorderColor"] = dataColors[i % DATA_COLORS_LEN]
         dataset[i]["borderColor"] = dataColors[i % DATA_COLORS_LEN]
     }
-    console.log(stateResults)
     configuredStateLineChart.update(); 
 }
 

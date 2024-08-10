@@ -152,16 +152,12 @@ function GetNthEntry(obj, n) {
 
 function parseData(rt) {
     // read data into global parser
-    console.log(rt)
     GLOBAL_DATA = JSON.parse(rt);
-    console.log(GLOBAL_DATA)
     US_SVG = GLOBAL_DATA[2];
     // console.log(US_SVG)
     STATE_SVGS = GLOBAL_DATA[1];
     GLOBAL_DATA = GLOBAL_DATA[0];
-    console.log(GLOBAL_DATA["ev_histogram"], "GLOBAL DATA")
     TOTAL_ENTRIES = Object.keys(GLOBAL_DATA["dem_win_chance"]).length;
-    console.log(GetNthEntry(GLOBAL_DATA["percentile_state_margins"], TOTAL_ENTRIES - 1))
 
     // Load specific data entries into useful lets
     DEM_WIN_CHANCE = GetNthEntry(GLOBAL_DATA["dem_win_chance"], TOTAL_ENTRIES - 1)["dem"]
@@ -172,7 +168,6 @@ function parseData(rt) {
     SIMULATIONS_BY_EV = GLOBAL_DATA["simulations_by_ev"]
     STATE_CHANCES = GLOBAL_DATA["state_chances"]
     CONDITIONAL_STATE_CHANCES =  GetNthEntry(GLOBAL_DATA["state_chances"], TOTAL_ENTRIES - 1)
-    console.log(CONDITIONAL_STATE_CHANCES)
     SIMULATION_DATE = Object.keys(GLOBAL_DATA["dem_win_chance"])[TOTAL_ENTRIES - 1]
     SIMULATION_DATE = SIMULATION_DATE.slice(0, 10) + " " + String(Number(SIMULATION_DATE.slice(-2))) + ":00 UTC"
     TIPPING_POINT_DATA = GetNthEntry(GLOBAL_DATA["tipping_point_data"], TOTAL_ENTRIES - 1)
@@ -180,7 +175,6 @@ function parseData(rt) {
     
     if (document.title == "Predictions | hte_election_model") {
         openPage();
-        console.log("PAGE OPENED")
     }
     else if (document.title == "States | hte_election_model") {
         openStatesPage();
@@ -304,7 +298,6 @@ function getMapCss(data, id_prefix="") {
 function loadData(yes, state_conditional=undefined) {
     let xhr = new XMLHttpRequest();
     // state_conditional = undefined
-    console.log(state_conditional, "state conditional")
     if (state_conditional != undefined) {
         xhr.onreadystatechange = function() { 
             if (xhr.readyState == 4 && xhr.status == 200) {
@@ -320,10 +313,8 @@ function loadData(yes, state_conditional=undefined) {
         xhr.send(null);
     }
     else {
-        console.log("yes!")
         xhr.onreadystatechange = function() { 
             if (xhr.readyState == 4 && xhr.status == 200) {
-                console.log("ON READY STATE CHANGE")
                 parseData(xhr.responseText);
             }
         }
@@ -558,7 +549,6 @@ function retrieveResults(prefix="") {
     while (resultsDiv.firstChild.nextSibling.nextSibling) {
         resultsDiv.removeChild(resultsDiv.lastChild);
     }
-    console.log(results)
     return results;
 }
 
@@ -686,7 +676,6 @@ function searchRequest(state, mode=undefined) {
         results = retrieveResults(state)
         state = results[0]
     }
-    console.log(state)
     let resultsDiv = document.getElementById("results")
     resultsDiv.style.border = "none"
     if (state != undefined) {
@@ -810,7 +799,6 @@ function searchRequest(state, mode=undefined) {
         document.body.appendChild(graphContainer)
         
         if (graphMode == "chance") {
-            console.log(state)
             loadStateLineChart("chance")
         }
         else {
@@ -861,8 +849,6 @@ function openStatesPage() {
 
 function removeState(stateRemove) {
     let stateDiv = stateRemove.parentNode
-    console.log(stateDiv)
-    console.log(stateResults)
     // console.log(stateColors)
     let statesDiv = document.getElementById("add-state-div")
     statesDiv.removeChild(stateDiv)
