@@ -45,29 +45,29 @@ def get_simulations():
 @app.route('/load_data', methods=['GET'])
 @app.route('/load_data.js', methods=['GET'])
 def load_data():
-    files = listdir("results")
+    files = listdir("/home/pbnjam/htemodel/2024_hte_election_model/web/results/")
     contents = {}
 
     for file in files:
-        with open("results/" + file, "+r") as f:
+        with open("/home/pbnjam/htemodel/2024_hte_election_model/web/results/" + file, "+r") as f:
             contents[file.split(".")[0]] = json.load(f)
     print(contents["ev_histogram"])
-    state_svg_files = listdir("static/media/state_svgs")
+    state_svg_files = listdir("/home/pbnjam/htemodel/2024_hte_election_model/web/static/media/state_svgs")
 
     state_svgs = {}
     for file in state_svg_files:
         if file[-3:] == "bmp":
             continue
-        with open("static/media/state_svgs/" + file, "r") as f:
+        with open("/home/pbnjam/htemodel/2024_hte_election_model/web/static/media/state_svgs/" + file, "r") as f:
             state_svgs[file.split(".")[0]] = f.read()
 
-    with open("static/media/us.svg", "r") as f:
+    with open("/home/pbnjam/htemodel/2024_hte_election_model/web/static/media/us.svg", "r") as f:
         us_svg = f.read()
     return json.dumps([contents, state_svgs, us_svg])
 
 @app.route('/what_if/<state_conditionals>', methods=["GET"])
 def whatif(state_conditionals):
-    simulations = pd.read_csv("../data/simulations.csv")
+    simulations = pd.read_csv("/home/pbnjam/htemodel/2024_hte_election_model/data/simulations.csv")
     state_conditionals = eval(state_conditionals)
     print(type(state_conditionals))
     state_conditionals.pop("isTrusted", None)
