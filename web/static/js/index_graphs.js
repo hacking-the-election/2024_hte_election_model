@@ -115,9 +115,9 @@ function loadPV() {
 
     lineConfig.data.datasets.splice(0,2)
     lineConfig.data.datasets.push(newDemDataset, newRepDataset)
-    lineConfig.options.scales.yAxes[0].ticks.max = Math.ceil(Math.max(Math.max(...newDemDataset.data), Math.max(...newRepDataset.data)) / 10) * 10;
-    lineConfig.options.scales.yAxes[0].ticks.min = Math.floor(Math.min(Math.min(...newDemDataset.data), Math.min(...newRepDataset.data)) / 10) * 10;
-    lineConfig.options.scales.yAxes[0].ticks.stepSize = 10;
+    lineConfig.options.scales.yAxes[0].ticks.max = Math.ceil(Math.max(Math.max(...newDemDataset.data), Math.max(...newRepDataset.data)) / 4) * 4;
+    lineConfig.options.scales.yAxes[0].ticks.min = Math.floor(Math.min(Math.min(...newDemDataset.data), Math.min(...newRepDataset.data)) / 4) * 4;
+    lineConfig.options.scales.yAxes[0].ticks.stepSize = 2;
     lineConfig.options.scales.yAxes[0].gridLines.color = gridLineColor;
     lineConfig.options.scales.yAxes[0].ticks.callback = function(value, index, values) {
         return value + '%';

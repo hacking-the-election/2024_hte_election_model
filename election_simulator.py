@@ -55,7 +55,6 @@ def analyze_simulations(simulations, state_conditionals=None, write=False):
     electoral_votes = pd.read_csv(os.path.dirname(os.path.abspath(__file__)) + "/data/electoral_votes.csv", header=0)["ev"]
     modified_simulations = simulations
     binary_matrix = (modified_simulations > 0).astype(int)
-    print(modified_simulations.columns)
     if state_conditionals:
         for state, win in state_conditionals.items():
             # For each state/win conditional, filter to where conditional is true
@@ -178,6 +177,6 @@ def analyze_simulations(simulations, state_conditionals=None, write=False):
         return state_chances, tipping_point_state_data, tipping_point_data, percentile_ev, percentile_state_margins, ev_histogram
 
 if __name__ == "__main__":
-    # run_simulations(write=True)
+    run_simulations(write=True)
     simulations = pd.read_csv(os.path.dirname(os.path.abspath(__file__)) + "/data/simulations.csv")
     analyze_simulations(simulations, write=True)

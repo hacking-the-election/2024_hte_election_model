@@ -98,7 +98,7 @@ def scrape_raw_average():
         chromedriver_path= "/home/pbnjam/.cache/selenium/chromedriver/linux64/127.0.6533.99/chromedriver.exe"
         # driver = webdriver.Chrome(chromedriver_path)
         # service = Service(executable_path='C:/Program Files (x86)/Google/Chrome/Application/chrome.exe')
-        service = Service(executable_path='./chromedriver-win64/chromedriver.exe')
+        service = Service(executable_path=os.path.dirname(os.path.abspath(__file__)) + '/chromedriver-win64/chromedriver.exe')
         options = webdriver.ChromeOptions()
         options.add_argument("--headless=new")
         driver = webdriver.Chrome(service=service, options=options)
@@ -127,8 +127,9 @@ def scrape_raw_average():
         territory_margins = []
         dates = []
         sample_weights = []
-        previous_pollster = ""
-        previous_sample_type = ""
+        previous_pollsters = []
+        previous_sample_types = []
+        previous_dates = []
         for x in poll_container.children:
             # Iterate through polls
             for poll in x.find_all("tr", attrs={"class":"visible-row"}):
@@ -138,18 +139,36 @@ def scrape_raw_average():
                 choices = [choice.p.text.strip() for choice in choices]
                 if REP not in choices or DEM not in choices:
                     continue
-                print(choices)
 
-                pollster = poll.find(attrs=("pollster-name"))
-                if "SoCal Research" in pollster or "Trafalgar" in pollster or "Rasmussen" in pollster:
+                poll_date = poll.find(attrs={"class":"date-wrapper"}).text
+                # print(poll_date.find(" "))
+                poll_date = poll_date[:poll_date.find("-")]
+                poll_date = date_converter(poll_date)
+
+                pollster = poll.find(attrs=("pollster-name")).text
+                if "SoCal" in pollster or "Trafalgar" in pollster or "Rasmussen" in pollster:
                     continue
+                sample = poll.find(attrs=("sample")).text
+                sample_type = poll.find(attrs=("sample-type")).text
+                # If the poll is a repeated (i.e. expanded vs. head to head) poll, remove
+                repeat = False
+                for i in range(len(previous_pollsters)):
+                    if previous_pollsters[i] == pollster and previous_sample_types[i] == sample_type and previous_dates[i] == poll_date:
+                        repeat = True
+                        break
+                if repeat:
+                    continue
+                print(choices)
+                # print(list(zip(previous_pollsters, previous_sample_types, previous_dates)))
+                print(pollster, sample_type, poll_date)
+                previous_pollsters.append(pollster)
+                previous_dates.append(poll_date)
+                previous_sample_types.append(sample_type)
+
+                # Turn poll date into time since poll date
+                dates.append((today - poll_date).astype(int))
+
                 # Weight based on sample type (LV = 1.5, RV = 1, A = 0.5)
-                sample_type = poll.find(attrs=("sample-type"))
-                # If the poll is a repeated (i.e. expanded vs. head to head) poll
-                if previous_pollster == pollster and previous_sample_type == sample_type:
-                    continue
-                previous_pollster = pollster
-                previous_sample_type = sample_type
                 if "RV" in sample_type:
                     sample_weights.append(1)
                 elif "V" in sample_type:
@@ -161,12 +180,6 @@ def scrape_raw_average():
                 else:
                     print("WEIRD SAMPLE TYPE??", str(sample_type))
 
-                poll_date = poll.find(attrs={"class":"date-wrapper"}).text
-                # print(poll_date.find(" "))
-                poll_date = poll_date[:poll_date.find("-")]
-                poll_date = date_converter(poll_date)
-                print(poll_date)
-                dates.append((today - poll_date).astype(int))
                 
                 # Read off margin (EVEN, dem lead, or rep lead)
                 if poll.find_all(attrs={"class":"net hide-mobile even"}) != []:
@@ -176,7 +189,7 @@ def scrape_raw_average():
                         poll_margin = int(poll.find_all(attrs={"class":"net hide-mobile dem"})[0].text[1:])
                     else:
                         poll_margin = -int(poll.find_all(attrs={"class":"net hide-mobile rep"})[0].text[1:])
-                print(poll_margin, "poll margin ")
+                print(poll_margin, "poll margin")
                 territory_margins.append(poll_margin)
         dates = np.array(dates)
         try:

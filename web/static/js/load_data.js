@@ -541,7 +541,8 @@ function retrieveResults(prefix="") {
     let results = []
     Object.keys(STATE_SVGS).forEach(key => {
         let full = STATEUNABBR[key]
-        if (full.startsWith(prefix)) {
+        if (full.startsWith(prefix) || prefix.toLowerCase() == key.toLowerCase()) {
+            console.log(prefix, key)
             results.push(STATEABBR[full])
         }
     })
