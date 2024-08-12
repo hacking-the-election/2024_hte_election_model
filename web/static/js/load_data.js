@@ -371,7 +371,7 @@ function openPage() {
 
     let lineTimelineToday = document.getElementById("line-timeline-today")
     let barTimelineToday = document.getElementById("bar-timeline-today")
-    SIMULATION_DATE = SIMULATION_DATE.slice(5, 7) + '/' + SIMULATION_DATE.slice(8, 13) + "H"
+    SIMULATION_DATE = SIMULATION_DATE.slice(5, 7) + '/' + SIMULATION_DATE.slice(8, 12) + "H"
     lineTimelineToday.innerHTML = SIMULATION_DATE
     barTimelineToday.innerHTML = SIMULATION_DATE
     loadHistogram();
