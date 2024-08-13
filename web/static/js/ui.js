@@ -400,7 +400,7 @@ function EVTooltip(tooltipModel) {
         let percentage = String((tooltipModel.body[0]["lines"][0].slice(23)/500).toFixed(2)) + "%"
         evs.innerHTML = tooltipModel.title[0] + " - " + percentage + " of simulations"
         map.appendChild(evs)
-        if (SIMULATIONS_BY_EV[tooltipModel.title[0]]) {
+        if (GLOBAL_DATA["simulations_by_ev"][tooltipModel.title[0]]) {
             let svg = document.createElement("div")
             changed_US_SVG = US_SVG.slice(0,US_SVG.indexOf("width")) + 'width: "250px"' + (US_SVG.slice(US_SVG.indexOf("width")+11))
             svg.innerHTML = changed_US_SVG

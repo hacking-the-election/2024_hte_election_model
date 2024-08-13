@@ -90,11 +90,11 @@ def scrape_raw_average():
     to_fill = {"margin":np.zeros(len(territories)), "poll_num":np.zeros(len(territories))}
     territory_averages = pd.DataFrame(to_fill, index=territories)
     for num, territory in enumerate(territories):
-        territory = territory.replace("-","/")
-        territory = territory.replace(" ","-")
-        print(territory.lower())
+        web_territory = territory.replace("-","/")
+        web_territory = web_territory.replace(" ","-")
+        print(web_territory.lower())
         # link = "https://www.realclearpolitics.com/epolls/2020/president/us/general_election_" + REP.lower() + "_vs_" + DEM.lower() + "-6247.html"
-        link = "https://projects.fivethirtyeight.com/polls/president-general/2024/" + territory.lower() + "/"
+        link = "https://projects.fivethirtyeight.com/polls/president-general/2024/" + web_territory.lower() + "/"
         chromedriver_path= "/home/pbnjam/.cache/selenium/chromedriver/linux64/127.0.6533.99/chromedriver.exe"
         # driver = webdriver.Chrome(chromedriver_path)
         # service = Service(executable_path='C:/Program Files (x86)/Google/Chrome/Application/chrome.exe')
@@ -109,10 +109,9 @@ def scrape_raw_average():
             print("CLICKED")
         except:
             print("NO SHOW MORE", territory)
-            continue
+            # continue
         page_source = driver.page_source
         soup = BeautifulSoup(page_source, 'html.parser')
-        yes = requests.get(link)
         # print(yes.json())
         # if yes.status_code == 404:
         #     territory_averages.iat[num,0] = 999
@@ -120,7 +119,8 @@ def scrape_raw_average():
         #     continue
         # soup = BeautifulSoup(yes.content, features="lxml")
         try:
-            poll_container = soup.body.find(attrs={"class":"container content"}).find(attrs={"class":"day-container"}).find_all(attrs={"class":"polls-table"})[0]
+            # poll_container = soup.body.find(attrs={"class":"container content"}).find(attrs={"class":"day-container"}).find_all(attrs={"class":"polls-table"})[0]
+            poll_container = soup.body.find(attrs={"class":"container content"}).find_all(attrs={"class":"day-container"})
         except:
             print("MISSED STATE", territory)
             continue
@@ -130,67 +130,76 @@ def scrape_raw_average():
         previous_pollsters = []
         previous_sample_types = []
         previous_dates = []
-        for x in poll_container.children:
-            # Iterate through polls
-            for poll in x.find_all("tr", attrs={"class":"visible-row"}):
-            # poll = x.tr
-                # Ignore polls not including rep/dem candidates
-                choices = poll.find(attrs={"class":"answers hide-desktop"}).find_all(attrs={"class":"mobile-answer"})
-                choices = [choice.p.text.strip() for choice in choices]
-                if REP not in choices or DEM not in choices:
+        for day_container in poll_container:
+            if "-" not in territory and territory != "National":
+                # if territory is a state
+                if territory not in day_container.find(attrs={"class":"poll-group-hed"}).text:
+                    # Ensure polls are actually for the state itself
                     continue
+                # print(territory, day_container.find(attrs={"class":"poll-group-hed"}))
+            poll_container = day_container.find_all(attrs={"class":"polls-table"})
+            for poll_group in poll_container:
+                for x in poll_group.children:
+                    # Iterate through polls
+                    for poll in x.find_all("tr", attrs={"class":"visible-row"}):
+                    # poll = x.tr
+                        # Ignore polls not including rep/dem candidates
+                        choices = poll.find(attrs={"class":"answers hide-desktop"}).find_all(attrs={"class":"mobile-answer"})
+                        choices = [choice.p.text.strip() for choice in choices]
+                        if REP not in choices or DEM not in choices:
+                            continue
 
-                poll_date = poll.find(attrs={"class":"date-wrapper"}).text
-                # print(poll_date.find(" "))
-                poll_date = poll_date[:poll_date.find("-")]
-                poll_date = date_converter(poll_date)
+                        poll_date = poll.find(attrs={"class":"date-wrapper"}).text
+                        # print(poll_date.find(" "))
+                        poll_date = poll_date[:poll_date.find("-")]
+                        poll_date = date_converter(poll_date)
 
-                pollster = poll.find(attrs=("pollster-name")).text
-                if "SoCal" in pollster or "Trafalgar" in pollster or "Rasmussen" in pollster:
-                    continue
-                sample = poll.find(attrs=("sample")).text
-                sample_type = poll.find(attrs=("sample-type")).text
-                # If the poll is a repeated (i.e. expanded vs. head to head) poll, remove
-                repeat = False
-                for i in range(len(previous_pollsters)):
-                    if previous_pollsters[i] == pollster and previous_sample_types[i] == sample_type and previous_dates[i] == poll_date:
-                        repeat = True
-                        break
-                if repeat:
-                    continue
-                print(choices)
-                # print(list(zip(previous_pollsters, previous_sample_types, previous_dates)))
-                print(pollster, sample_type, poll_date)
-                previous_pollsters.append(pollster)
-                previous_dates.append(poll_date)
-                previous_sample_types.append(sample_type)
+                        pollster = poll.find(attrs=("pollster-name")).text
+                        if "SoCal" in pollster or "Trafalgar" in pollster or "Rasmussen" in pollster:
+                            continue
+                        sample = poll.find(attrs=("sample")).text
+                        sample_type = poll.find(attrs=("sample-type")).text
+                        # If the poll is a repeated (i.e. expanded vs. head to head) poll, remove
+                        repeat = False
+                        for i in range(len(previous_pollsters)):
+                            if previous_pollsters[i] == pollster and previous_sample_types[i] == sample_type and previous_dates[i] == poll_date:
+                                repeat = True
+                                break
+                        if repeat:
+                            continue
+                        print(choices)
+                        # print(list(zip(previous_pollsters, previous_sample_types, previous_dates)))
+                        print(pollster, sample_type, poll_date)
+                        previous_pollsters.append(pollster)
+                        previous_dates.append(poll_date)
+                        previous_sample_types.append(sample_type)
 
-                # Turn poll date into time since poll date
-                dates.append((today - poll_date).astype(int))
+                        # Turn poll date into time since poll date
+                        dates.append((today - poll_date).astype(int))
 
-                # Weight based on sample type (LV = 1.5, RV = 1, A = 0.5)
-                if "RV" in sample_type:
-                    sample_weights.append(1)
-                elif "V" in sample_type:
-                    sample_weights.append(1)
-                elif "A" in sample_type:
-                    sample_weights.append(0.5)
-                elif "LV" in sample_type:
-                    sample_weights.append(1.5)
-                else:
-                    print("WEIRD SAMPLE TYPE??", str(sample_type))
+                        # Weight based on sample type (LV = 1.5, RV = 1, A = 0.5)
+                        if "RV" in sample_type:
+                            sample_weights.append(1)
+                        elif "V" in sample_type:
+                            sample_weights.append(1)
+                        elif "A" in sample_type:
+                            sample_weights.append(0.5)
+                        elif "LV" in sample_type:
+                            sample_weights.append(1.5)
+                        else:
+                            print("WEIRD SAMPLE TYPE??", str(sample_type))
 
-                
-                # Read off margin (EVEN, dem lead, or rep lead)
-                if poll.find_all(attrs={"class":"net hide-mobile even"}) != []:
-                    poll_margin = 0
-                else:
-                    if poll.find_all(attrs={"class":"leader hide-mobile"})[0].text == DEM:
-                        poll_margin = int(poll.find_all(attrs={"class":"net hide-mobile dem"})[0].text[1:])
-                    else:
-                        poll_margin = -int(poll.find_all(attrs={"class":"net hide-mobile rep"})[0].text[1:])
-                print(poll_margin, "poll margin")
-                territory_margins.append(poll_margin)
+                        
+                        # Read off margin (EVEN, dem lead, or rep lead)
+                        if poll.find_all(attrs={"class":"net hide-mobile even"}) != []:
+                            poll_margin = 0
+                        else:
+                            if poll.find_all(attrs={"class":"leader hide-mobile"})[0].text == DEM:
+                                poll_margin = int(poll.find_all(attrs={"class":"net hide-mobile dem"})[0].text[1:])
+                            else:
+                                poll_margin = -int(poll.find_all(attrs={"class":"net hide-mobile rep"})[0].text[1:])
+                        print(poll_margin, "poll margin")
+                        territory_margins.append(poll_margin)
         dates = np.array(dates)
         try:
             # Ratio of days passed over a month

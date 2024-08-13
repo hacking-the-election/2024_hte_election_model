@@ -28,5 +28,10 @@
         "5 percentile": 169.0,
         "median": 263.0,
         "95 percentile": 408.0
+    },
+    "2024-08-13T07": {
+        "5 percentile": 166.0,
+        "median": 268.0,
+        "95 percentile": 413.0
     }
 }
