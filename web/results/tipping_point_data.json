@@ -1,8 +1,4 @@
 {
-    "2024-08-09T03": {
-        "average tipping point": -0.5,
-        "pop-ev split": -2.805
-    },
     "2024-08-09T06": {
         "average tipping point": -1.021,
         "pop-ev split": -2.686
@@ -42,5 +38,9 @@
     "2024-08-18T04": {
         "average tipping point": 0.275,
         "pop-ev split": -1.75
+    },
+    "2024-08-19T01": {
+        "average tipping point": 0.279,
+        "pop-ev split": -2.001
     }
 }
