@@ -35,6 +35,7 @@ def time_weighting(poll_delta):
     return y
 
 def date_converter(date):
+    print(date)
     if date.find(" ") == -1:
         day = date[date.find(" "):].strip().zfill(2)
     else:
@@ -57,7 +58,7 @@ def date_converter(date):
         poll_date = np.datetime64("2024-07-"+day)
     if "Aug." in date:
         poll_date = np.datetime64("2024-08-"+day)
-    if "Sep." in date:
+    if "Sept." in date:
         poll_date = np.datetime64("2024-09-"+day)
     if "Oct." in date:
         poll_date = np.datetime64("2024-10-"+day)
