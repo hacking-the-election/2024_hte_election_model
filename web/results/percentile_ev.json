@@ -108,5 +108,10 @@
         "5 percentile": 180.0,
         "median": 282.0,
         "95 percentile": 419.0
+    },
+    "2024-09-10T17": {
+        "5 percentile": 193.0,
+        "median": 283.0,
+        "95 percentile": 422.0
     }
 }
