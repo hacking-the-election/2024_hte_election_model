@@ -96,7 +96,6 @@ def scrape_raw_average():
         print(web_territory.lower())
         # link = "https://www.realclearpolitics.com/epolls/2020/president/us/general_election_" + REP.lower() + "_vs_" + DEM.lower() + "-6247.html"
         link = "https://projects.fivethirtyeight.com/polls/president-general/2024/" + web_territory.lower() + "/"
-        chromedriver_path= "/home/pbnjam/.cache/selenium/chromedriver/linux64/127.0.6533.99/chromedriver.exe"
         # driver = webdriver.Chrome(chromedriver_path)
         # service = Service(executable_path='C:/Program Files (x86)/Google/Chrome/Application/chrome.exe')
         service = Service(executable_path=os.path.dirname(os.path.abspath(__file__)) + '/chromedriver-win64/chromedriver.exe')
