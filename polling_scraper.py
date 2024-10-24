@@ -167,15 +167,6 @@ def scrape_raw_average():
                                 break
                         if repeat:
                             continue
-                        print(choices)
-                        # print(list(zip(previous_pollsters, previous_sample_types, previous_dates)))
-                        print(pollster, sample_type, poll_date)
-                        previous_pollsters.append(pollster)
-                        previous_dates.append(poll_date)
-                        previous_sample_types.append(sample_type)
-
-                        # Turn poll date into time since poll date
-                        dates.append((today - poll_date).astype(int))
 
                         # Weight based on sample type (LV = 1.5, RV = 1, A = 0.5)
                         if "RV" in sample_type:
@@ -188,6 +179,17 @@ def scrape_raw_average():
                             sample_weights.append(1.5)
                         else:
                             print("WEIRD SAMPLE TYPE??", str(sample_type))
+                            continue
+                        
+                        print(choices)
+                        # print(list(zip(previous_pollsters, previous_sample_types, previous_dates)))
+                        print(pollster, sample_type, poll_date)
+                        previous_pollsters.append(pollster)
+                        previous_dates.append(poll_date)
+                        previous_sample_types.append(sample_type)
+
+                        # Turn poll date into time since poll date
+                        dates.append((today - poll_date).astype(int))
 
                         
                         # Read off margin (EVEN, dem lead, or rep lead)
