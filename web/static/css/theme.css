@@ -4,11 +4,11 @@
     --main-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
     
     /* Normal Colors */
-    --dem-bg:rgb(110, 144, 255); 
-    --rep-bg:rgb(255, 104, 104);
+    /* --dem-bg:rgb(110, 144, 255); 
+    --rep-bg:rgb(255, 104, 104); */
 
     /* Halloween Colors */
-    /* --rep-bg:rgb(255, 166, 0);
-    --dem-bg:rgb(190, 123, 211); */
+    --rep-bg:rgb(255, 166, 0);
+    --dem-bg:rgb(190, 123, 211);
 
 }

@@ -142,5 +142,9 @@
     "2024-10-25T15": {
         "average tipping point": 0.133,
         "pop-ev split": -1.319
+    },
+    "2024-10-28T15": {
+        "average tipping point": -0.113,
+        "pop-ev split": -1.383
     }
 }
